@@ -7,16 +7,276 @@
     <link rel="stylesheet" href="https://unpkg.com/carbon-components@10.58.0/css/carbon-components.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; padding: 0; font-family: 'IBM Plex Sans', sans-serif; }
-        .page-content { display: none; padding: 2rem; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        
+        .page-content { 
+            display: none; 
+            padding: 3rem 2rem;
+            max-width: 1584px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
         .page-content.active { display: block; }
-        .bx--header__name { display: flex; align-items: center; gap: 0.5rem; }
-        .stat-card { background: white; padding: 1.5rem; border-left: 4px solid #0f62fe; margin-bottom: 1rem; }
-        .stat-value { font-size: 2.5rem; font-weight: 300; margin: 0.5rem 0; }
-        .flow-node { background: white; border: 2px solid #e0e0e0; padding: 1.5rem; text-align: center; margin: 1rem; transition: all 0.2s; }
-        .flow-node:hover { border-color: #0f62fe; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-        .chart-bar { flex: 1; background: linear-gradient(to top, #0f62fe, #78a9ff); border-radius: 4px 4px 0 0; transition: all 0.3s; cursor: pointer; }
-        .chart-bar:hover { background: linear-gradient(to top, #0353e9, #4589ff); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bx--header__name { 
+            display: flex; 
+            align-items: center; 
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .page-header {
+            margin-bottom: 3rem;
+        }
+        
+        .page-header h1 {
+            margin-bottom: 0.75rem;
+            font-size: 2.625rem;
+            font-weight: 300;
+        }
+        
+        .page-header p {
+            color: #525252;
+            font-size: 1.125rem;
+            margin: 0;
+        }
+        
+        .stat-card { 
+            background: white; 
+            padding: 2rem; 
+            border-left: 4px solid #0f62fe; 
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: all 0.2s ease;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.32px;
+            color: #525252;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+        
+        .stat-value { 
+            font-size: 3.375rem; 
+            font-weight: 300; 
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .bx--row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .bx--tile {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: all 0.2s ease;
+            padding: 2rem;
+        }
+        
+        .bx--tile:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .bx--tile h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .flow-node { 
+            background: white; 
+            border: 2px solid #e0e0e0; 
+            padding: 2rem; 
+            text-align: center; 
+            margin: 1rem; 
+            transition: all 0.2s;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        
+        .flow-node:hover { 
+            border-color: #0f62fe; 
+            box-shadow: 0 4px 16px rgba(15,98,254,0.25);
+            transform: translateY(-4px);
+        }
+        
+        .flow-node h4 {
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .flow-node p {
+            margin: 0;
+            color: #525252;
+            font-size: 0.875rem;
+        }
+        
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            margin: 0 auto 1rem;
+        }
+        
+        .flow-arrow {
+            color: #0f62fe;
+            font-size: 1.75rem;
+            margin: 1rem 0;
+        }
+        
+        .chart-bar { 
+            flex: 1; 
+            background: linear-gradient(to top, #0f62fe, #78a9ff); 
+            border-radius: 4px 4px 0 0; 
+            transition: all 0.3s; 
+            cursor: pointer;
+            min-width: 24px;
+        }
+        
+        .chart-bar:hover { 
+            background: linear-gradient(to top, #0353e9, #4589ff);
+            transform: scaleY(1.05);
+        }
+        
+        .bx--btn {
+            font-weight: 600;
+            letter-spacing: 0.16px;
+            min-height: 48px;
+            padding: 0 1.5rem;
+        }
+        
+        .bx--text-area {
+            font-size: 0.875rem;
+            padding: 1rem;
+            line-height: 1.5;
+        }
+        
+        .notification-success {
+            background-color: #d0e2d0;
+            border-left: 4px solid #24a148;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .service-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s;
+        }
+        
+        .service-card:hover {
+            background-color: #f4f4f4;
+        }
+        
+        .service-card:last-child {
+            border-bottom: none;
+        }
+        
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .service-details h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .service-details p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #525252;
+        }
+        
+        .flow-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .flow-card:hover {
+            transform: translateX(4px);
+        }
+        
+        .flow-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .chart-container {
+            height: 320px;
+            display: flex;
+            align-items: flex-end;
+            gap: 0.75rem;
+            padding: 2rem 0;
+        }
     </style>
 </head>
 <body class="bx--body">
@@ -37,139 +297,499 @@
     </header>
 
     <div class="bx--content">
+        <!-- Home Page -->
         <div id="home-page" class="page-content active">
-            <h1 class="bx--type-productive-heading-05">Welcome to IntegrationIQ</h1>
-            <p class="bx--type-body-long-01" style="margin-bottom: 2rem;">Create powerful integrations using natural language.</p>
+            <div class="page-header">
+                <h1 class="bx--type-productive-heading-06">Welcome to IntegrationIQ</h1>
+                <p class="bx--type-body-long-02">Create powerful integrations using natural language powered by IBM Integration Copilot.</p>
+            </div>
             
-            <div class="bx--tile" style="margin-bottom: 2rem;">
+            <div class="bx--tile" style="margin-bottom: 3rem;">
                 <h3 class="bx--type-productive-heading-03">Create Integration with Natural Language</h3>
+                <p class="bx--type-body-long-01" style="margin-bottom: 1.5rem; color: #525252;">
+                    Describe your integration in plain English and let AI generate the flow automatically.
+                </p>
                 <textarea class="bx--text-area" rows="4" placeholder="Example: When a GitHub issue is created, store it in Airtable, send a Slack notification, and email the team"></textarea>
-                <button class="bx--btn bx--btn--primary" style="margin-top: 1rem;" onclick="generateFlow()">
-                    <i class="fas fa-magic"></i> Generate Flow
+                <button class="bx--btn bx--btn--primary" style="margin-top: 1.5rem;" onclick="generateFlow()">
+                    <i class="fas fa-magic" style="margin-right: 0.5rem;"></i>
+                    Generate Flow
                 </button>
             </div>
 
             <div class="bx--row">
-                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">ACTIVE FLOWS</p><div class="stat-value">12</div></div></div>
-                <div class="bx--col-lg-4"><div class="stat-card" style="border-left-color: #24a148;"><p class="bx--type-label-01">SUCCESS RATE</p><div class="stat-value" style="color: #24a148;">99.8%</div></div></div>
-                <div class="bx--col-lg-4"><div class="stat-card" style="border-left-color: #8a3ffc;"><p class="bx--type-label-01">EXECUTIONS TODAY</p><div class="stat-value">1,247</div></div></div>
-            </div>
-        </div>
-
-        <div id="flows-page" class="page-content">
-            <h1 class="bx--type-productive-heading-05">Integration Flows</h1>
-            <button class="bx--btn bx--btn--primary" onclick="showPage('create-flow')" style="margin-bottom: 2rem;">New Flow</button>
-            
-            <div class="bx--tile bx--tile--clickable" onclick="showFlowDetail()">
-                <h3 class="bx--type-productive-heading-03">GitHub Issues to Team</h3>
-                <p class="bx--type-body-long-01">GitHub → Airtable → Slack → Email</p>
-                <div style="margin-top: 1rem;"><span class="bx--tag bx--tag--green">Active</span> <span>99.8% Success</span></div>
-            </div>
-        </div>
-
-        <div id="create-flow-page" class="page-content">
-            <button class="bx--btn bx--btn--ghost" onclick="showPage('flows')">← Back</button>
-            <h1 class="bx--type-productive-heading-05">New Integration Flow</h1>
-            
-            <div class="bx--tile" style="margin: 2rem 0;">
-                <h3 class="bx--type-productive-heading-03">Generated Flow</h3>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2rem;">
-                    <div class="flow-node" style="width: 250px;"><i class="fab fa-github fa-2x"></i><h4>GitHub</h4><p>Webhook</p></div>
-                    <i class="fas fa-chevron-down" style="color: #0f62fe;"></i>
-                    <div class="flow-node" style="width: 250px;"><i class="fas fa-sync-alt fa-2x" style="color: #0f62fe;"></i><h4>Transform</h4><p>Parse Data</p></div>
-                    <div style="display: flex; gap: 1rem;">
-                        <div class="flow-node" style="width: 180px;"><i class="fas fa-database fa-2x" style="color: #ff6900;"></i><h4>Airtable</h4></div>
-                        <div class="flow-node" style="width: 180px;"><i class="fab fa-slack fa-2x" style="color: #4a154b;"></i><h4>Slack</h4></div>
-                        <div class="flow-node" style="width: 180px;"><i class="fas fa-envelope fa-2x" style="color: #1a82e2;"></i><h4>Email</h4></div>
+                <div>
+                    <div class="stat-card">
+                        <p class="stat-label">Active Flows</p>
+                        <div class="stat-value">12</div>
+                        <p class="stat-change" style="color: #24a148;">
+                            <i class="fas fa-arrow-up"></i>
+                            +2 this week
+                        </p>
                     </div>
                 </div>
-            </div>
-            
-            <button class="bx--btn bx--btn--primary" onclick="deployFlow()">Deploy Flow</button>
-        </div>
-
-        <div id="flow-detail-page" class="page-content">
-            <button class="bx--btn bx--btn--ghost" onclick="showPage('flows')">← Back</button>
-            <h1 class="bx--type-productive-heading-05">GitHub Issues to Team</h1>
-            
-            <div class="bx--inline-notification bx--inline-notification--success" style="margin: 2rem 0;">
-                <div class="bx--inline-notification__details">
-                    <div class="bx--inline-notification__text-wrapper">
-                        <p class="bx--inline-notification__title">Self-Healing Alert</p>
-                        <p class="bx--inline-notification__subtitle">Airtable rate limit detected and automatically fixed</p>
+                <div>
+                    <div class="stat-card" style="border-left-color: #24a148;">
+                        <p class="stat-label">Success Rate</p>
+                        <div class="stat-value" style="color: #24a148;">99.8%</div>
+                        <p class="stat-change" style="color: #24a148;">
+                            <i class="fas fa-check"></i>
+                            Excellent performance
+                        </p>
                     </div>
                 </div>
-            </div>
-
-            <div class="bx--row">
-                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">SUCCESS RATE</p><div class="stat-value" style="color: #24a148;">99.8%</div></div></div>
-                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">EXECUTIONS</p><div class="stat-value">1,247</div></div></div>
-                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">AVG TIME</p><div class="stat-value">245ms</div></div></div>
-            </div>
-        </div>
-
-        <div id="monitoring-page" class="page-content">
-            <h1 class="bx--type-productive-heading-05">Real-time Monitoring</h1>
-            
-            <div class="bx--row" style="margin-bottom: 2rem;">
-                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">STATUS</p><div class="stat-value" style="color: #24a148;">Healthy</div></div></div>
-                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">ACTIVE FLOWS</p><div class="stat-value">12</div></div></div>
-                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">AVG TIME</p><div class="stat-value">245ms</div></div></div>
+                <div>
+                    <div class="stat-card" style="border-left-color: #8a3ffc;">
+                        <p class="stat-label">Executions Today</p>
+                        <div class="stat-value">1,247</div>
+                        <p class="stat-change" style="color: #525252;">
+                            <i class="fas fa-bolt"></i>
+                            52/hour average
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div class="bx--tile">
-                <h3 class="bx--type-productive-heading-03">Execution Rate (Last Hour)</h3>
-                <div style="height: 300px; display: flex; align-items: flex-end; gap: 0.5rem; padding: 1rem 0;">
-                    <div class="chart-bar" style="height: 60%;"></div>
-                    <div class="chart-bar" style="height: 75%;"></div>
-                    <div class="chart-bar" style="height: 45%;"></div>
-                    <div class="chart-bar" style="height: 80%;"></div>
-                    <div class="chart-bar" style="height: 90%;"></div>
-                    <div class="chart-bar" style="height: 70%;"></div>
-                    <div class="chart-bar" style="height: 85%;"></div>
-                    <div class="chart-bar" style="height: 95%;"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 class="bx--type-productive-heading-03" style="margin: 0;">Recent Activity</h3>
+                    <button onclick="showPage('monitoring')" class="bx--btn bx--btn--ghost" style="padding: 0.5rem 1rem;">
+                        View All
+                    </button>
+                </div>
+                <div>
+                    <div class="service-card">
+                        <div class="service-info">
+                            <div style="width: 40px; height: 40px; background-color: #d0e2d0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check" style="color: #24a148;"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>GitHub → Airtable Flow</h4>
+                                <p>Processed 5 issues successfully</p>
+                            </div>
+                        </div>
+                        <span class="bx--type-label-01" style="color: #525252;">2 min ago</span>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-info">
+                            <div style="width: 40px; height: 40px; background-color: #e8daff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-wrench" style="color: #8a3ffc;"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Auto-fixed: Slack Rate Limit</h4>
+                                <p>Applied exponential backoff strategy</p>
+                            </div>
+                        </div>
+                        <span class="bx--type-label-01" style="color: #525252;">15 min ago</span>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-info">
+                            <div style="width: 40px; height: 40px; background-color: #d0e2d0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check" style="color: #24a148;"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Customer Sync Flow</h4>
+                                <p>Synced 23 customers to Salesforce</p>
+                            </div>
+                        </div>
+                        <span class="bx--type-label-01" style="color: #525252;">1 hour ago</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="settings-page" class="page-content">
-            <h1 class="bx--type-productive-heading-05">Settings</h1>
+        <!-- Flows Page -->
+        <div id="flows-page" class="page-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                <div class="page-header" style="margin: 0;">
+                    <h1 class="bx--type-productive-heading-06" style="margin-bottom: 0.5rem;">Integration Flows</h1>
+                    <p class="bx--type-body-long-01" style="color: #525252; margin: 0;">Manage and monitor your integration workflows</p>
+                </div>
+                <button onclick="showPage('create-flow')" class="bx--btn bx--btn--primary">
+                    <i class="fas fa-plus" style="margin-right: 0.5rem;"></i>
+                    New Flow
+                </button>
+            </div>
+
+            <div class="bx--tile flow-card" onclick="showFlowDetail()" style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 class="bx--type-productive-heading-03">GitHub Issues to Team</h3>
+                        <p class="bx--type-body-long-01" style="color: #525252; margin-top: 0.75rem;">
+                            Automatically process GitHub issues and notify team across multiple channels
+                        </p>
+                    </div>
+                </div>
+                <div class="flow-meta">
+                    <span style="color: #24a148; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; background-color: #24a148; border-radius: 50%;"></span>
+                        Active
+                    </span>
+                    <span style="color: #525252;">99.8% Success</span>
+                    <span style="color: #525252;">1,247 executions today</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 99.8%; background: linear-gradient(to right, #24a148, #42be65);"></div>
+                </div>
+            </div>
+
+            <div class="bx--tile flow-card" style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 class="bx--type-productive-heading-03">Customer Sync Flow</h3>
+                        <p class="bx--type-body-long-01" style="color: #525252; margin-top: 0.75rem;">
+                            Synchronize customer data between Shopify and Salesforce
+                        </p>
+                    </div>
+                </div>
+                <div class="flow-meta">
+                    <span style="color: #24a148; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; background-color: #24a148; border-radius: 50%;"></span>
+                        Active
+                    </span>
+                    <span style="color: #525252;">100% Success</span>
+                    <span style="color: #525252;">456 executions today</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 100%; background: linear-gradient(to right, #24a148, #42be65);"></div>
+                </div>
+            </div>
+
+            <div class="bx--tile flow-card" style="border-left: 4px solid #f1c21b;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 class="bx--type-productive-heading-03">Order Processing Pipeline</h3>
+                        <p class="bx--type-body-long-01" style="color: #525252; margin-top: 0.75rem;">
+                            Process orders from Stripe and update database
+                        </p>
+                    </div>
+                </div>
+                <div class="flow-meta">
+                    <span style="color: #f1c21b; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; background-color: #f1c21b; border-radius: 50%;"></span>
+                        Issues Detected
+                    </span>
+                    <span style="color: #525252;">85.2% Success</span>
+                    <span style="color: #525252;">89 executions today</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 85.2%; background: linear-gradient(to right, #f1c21b, #fddc69);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Flow Page -->
+        <div id="create-flow-page" class="page-content">
+            <button onclick="showPage('flows')" class="bx--btn bx--btn--ghost" style="margin-bottom: 2rem;">
+                <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
+                Back to Flows
+            </button>
             
-            <div class="bx--tile" style="margin: 2rem 0;">
-                <h3 class="bx--type-productive-heading-03">Connected Services</h3>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e0e0e0;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <i class="fab fa-github fa-2x"></i>
-                        <div><h4>GitHub</h4><p class="bx--type-label-01">Connected as @yourusername</p></div>
-                    </div>
-                    <span class="bx--tag bx--tag--green">Connected</span>
+            <div class="page-header">
+                <h1 class="bx--type-productive-heading-06">New Integration Flow</h1>
+                <p class="bx--type-body-long-01" style="color: #525252;">AI-generated integration based on your description</p>
+            </div>
+            
+            <div class="notification-success">
+                <div class="notification-title">
+                    <i class="fas fa-quote-left"></i>
+                    Your Input
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e0e0e0;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <i class="fas fa-database fa-2x" style="color: #ff6900;"></i>
-                        <div><h4>Airtable</h4><p class="bx--type-label-01">2 bases connected</p></div>
+                <p class="bx--type-body-long-01" style="margin: 0; color: #161616;">
+                    "When a GitHub issue is created, store it in Airtable, send a Slack notification, and email the team"
+                </p>
+            </div>
+
+            <div class="bx--tile" style="margin-bottom: 3rem;">
+                <h3 class="bx--type-productive-heading-03" style="margin-bottom: 2rem;">Generated Flow</h3>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 2rem 0;">
+                    <div class="flow-node" style="width: 320px;">
+                        <div class="service-icon" style="background-color: #161616;">
+                            <i class="fab fa-github" style="font-size: 28px; color: white;"></i>
+                        </div>
+                        <h4>GitHub</h4>
+                        <p>Webhook Trigger</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #8d8d8d;">Issue Created Event</p>
                     </div>
-                    <span class="bx--tag bx--tag--green">Connected</span>
+                    
+                    <i class="fas fa-chevron-down flow-arrow"></i>
+                    
+                    <div class="flow-node" style="width: 320px; border-color: #0f62fe;">
+                        <div class="service-icon" style="background-color: #0f62fe;">
+                            <i class="fas fa-sync-alt" style="font-size: 28px; color: white;"></i>
+                        </div>
+                        <h4>Transform Data</h4>
+                        <p>Parse & Format</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #8d8d8d;">Extract relevant fields</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 2rem; align-items: center; margin: 1rem 0;">
+                        <i class="fas fa-chevron-down" style="color: #8d8d8d; font-size: 1.25rem;"></i>
+                        <i class="fas fa-chevron-down" style="color: #8d8d8d; font-size: 1.25rem;"></i>
+                        <i class="fas fa-chevron-down" style="color: #8d8d8d; font-size: 1.25rem;"></i>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;">
+                        <div class="flow-node" style="width: 240px;">
+                            <div class="service-icon" style="background-color: #ff6900;">
+                                <i class="fas fa-database" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <h4>Airtable</h4>
+                            <p>Create Record</p>
+                        </div>
+                        
+                        <div class="flow-node" style="width: 240px;">
+                            <div class="service-icon" style="background-color: #4a154b;">
+                                <i class="fab fa-slack" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <h4>Slack</h4>
+                            <p>Send Message</p>
+                        </div>
+                        
+                        <div class="flow-node" style="width: 240px;">
+                            <div class="service-icon" style="background-color: #1a82e2;">
+                                <i class="fas fa-envelope" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <h4>SendGrid</h4>
+                            <p>Email Team</p>
+                        </div>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e0e0e0;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <i class="fab fa-slack fa-2x" style="color: #4a154b;"></i>
-                        <div><h4>Slack</h4><p class="bx--type-label-01">Workspace: Your Team</p></div>
-                    </div>
-                    <span class="bx--tag bx--tag--green">Connected</span>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <button onclick="showPage('flows')" class="bx--btn bx--btn--secondary">Cancel</button>
+                <button onclick="deployFlow()" class="bx--btn bx--btn--primary">
+                    <i class="fas fa-rocket" style="margin-right: 0.5rem;"></i>
+                    Deploy Flow
+                </button>
+            </div>
+        </div>
+
+        <!-- Flow Detail Page -->
+        <div id="flow-detail-page" class="page-content">
+            <button onclick="showPage('flows')" class="bx--btn bx--btn--ghost" style="margin-bottom: 2rem;">
+                <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
+                Back to Flows
+            </button>
+            
+            <div class="page-header">
+                <h1 class="bx--type-productive-heading-06">GitHub Issues to Team Notification</h1>
+                <p class="bx--type-body-long-01" style="color: #525252;">Monitor and manage your integration flow</p>
+            </div>
+
+            <div id="healing-alert" class="notification-success">
+                <div class="notification-title">
+                    <i class="fas fa-wrench"></i>
+                    Self-Healing Alert
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <i class="fas fa-envelope fa-2x" style="color: #1a82e2;"></i>
-                        <div><h4>SendGrid</h4><p class="bx--type-label-01">Email service</p></div>
+                <p class="bx--type-body-long-01" style="margin: 0.75rem 0 0 0; color: #161616;">
+                    Airtable rate limit detected and automatically fixed
+                </p>
+                <p class="bx--type-label-01" style="margin: 0.5rem 0 0 0; color: #0e6027;">
+                    Applied: Exponential backoff + Request batching
+                </p>
+                <p class="bx--type-label-01" style="margin: 0.75rem 0 0 0; color: #0e6027; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-check-circle"></i>
+                    Resolved • 2 minutes ago
+                </p>
+            </div>
+
+            <div class="bx--row">
+                <div>
+                    <div class="stat-card" style="border-left-color: #24a148;">
+                        <p class="stat-label">Success Rate</p>
+                        <div class="stat-value" style="color: #24a148;">99.8%</div>
+                        <p class="stat-change" style="color: #525252;">Last 24 hours</p>
                     </div>
-                    <span class="bx--tag bx--tag--green">Connected</span>
+                </div>
+                <div>
+                    <div class="stat-card">
+                        <p class="stat-label">Total Executions</p>
+                        <div class="stat-value">1,247</div>
+                        <p class="stat-change" style="color: #525252;">Today</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="stat-card">
+                        <p class="stat-label">Avg Response Time</p>
+                        <div class="stat-value">245ms</div>
+                        <p class="stat-change" style="color: #24a148;">
+                            <i class="fas fa-arrow-down"></i>
+                            15% faster
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bx--tile">
+                <h3 class="bx--type-productive-heading-03" style="margin-bottom: 1.5rem;">Recent Executions</h3>
+                <table class="bx--data-table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e0e0e0;">ID</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e0e0e0;">Status</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e0e0e0;">Time</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e0e0e0;">Duration</th>
+                            <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e0e0e0;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 1rem;">#1247</td>
+                            <td style="padding: 1rem;"><span class="bx--tag bx--tag--green">Success</span></td>
+                            <td style="padding: 1rem;">2 min ago</td>
+                            <td style="padding: 1rem;">245ms</td>
+                            <td style="padding: 1rem;"><button class="bx--btn bx--btn--ghost" style="padding: 0.5rem 1rem;">View Logs</button></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <td style="padding: 1rem;">#1246</td>
+                            <td style="padding: 1rem;"><span class="bx--tag bx--tag--green">Success</span></td>
+                            <td style="padding: 1rem;">5 min ago</td>
+                            <td style="padding: 1rem;">198ms</td>
+                            <td style="padding: 1rem;"><button class="bx--btn bx--btn--ghost" style="padding: 0.5rem 1rem;">View Logs</button></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem;">#1245</td>
+                            <td style="padding: 1rem;"><span class="bx--tag bx--tag--purple">Auto-fixed</span></td>
+                            <td style="padding: 1rem;">8 min ago</td>
+                            <td style="padding: 1rem;">1.2s</td>
+                            <td style="padding: 1rem;"><button class="bx--btn bx--btn--ghost" style="padding: 0.5rem 1rem;">View Logs</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Monitoring Page -->
+        <div id="monitoring-page" class="page-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+                <div class="page-header" style="margin: 0;">
+                    <h1 class="bx--type-productive-heading-06" style="margin-bottom: 0.5rem;">Real-time Monitoring</h1>
+                    <p class="bx--type-body-long-01" style="color: #525252; margin: 0;">Live system health and performance metrics</p>
+                </div>
+                <span class="bx--type-body-long-01" style="color: #24a148; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 8px; height: 8px; background-color: #24a148; border-radius: 50%; animation: pulse 2s infinite;"></span>
+                    Live
+                </span>
+            </div>
+
+            <div class="bx--row">
+                <div>
+                    <div class="stat-card" style="border-left-color: #24a148;">
+                        <p class="stat-label">Overall Status</p>
+                        <div class="stat-value" style="color: #24a148;">Healthy</div>
+                        <p class="stat-change" style="color: #525252;">All systems operational</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="stat-card">
+                        <p class="stat-label">Active Flows</p>
+                        <div class="stat-value">12</div>
+                        <p class="stat-change" style="color: #525252;">Running smoothly</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="stat-card">
+                        <p class="stat-label">Avg Response Time</p>
+                        <div class="stat-value">245ms</div>
+                        <p class="stat-change" style="color: #24a148;">
+                            <i class="fas fa-arrow-down"></i>
+                            15% faster than yesterday
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bx--tile">
+                <h3 class="bx--type-productive-heading-03" style="margin-bottom: 1rem;">Execution Rate (Last Hour)</h3>
+                <p class="bx--type-body-long-01" style="color: #525252; margin-bottom: 2rem;">Hover over bars to see details</p>
+                <div class="chart-container">
+                    <div class="chart-bar" style="height: 60%;" title="12pm: 60 executions"></div>
+                    <div class="chart-bar" style="height: 75%;" title="1pm: 75 executions"></div>
+                    <div class="chart-bar" style="height: 45%;" title="2pm: 45 executions"></div>
+                    <div class="chart-bar" style="height: 80%;" title="3pm: 80 executions"></div>
+                    <div class="chart-bar" style="height: 90%;" title="4pm: 90 executions"></div>
+                    <div class="chart-bar" style="height: 70%;" title="5pm: 70 executions"></div>
+                    <div class="chart-bar" style="height: 85%;" title="6pm: 85 executions"></div>
+                    <div class="chart-bar" style="height: 95%;" title="7pm: 95 executions"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.75rem; color: #525252;">
+                    <span>12pm</span>
+                    <span>1pm</span>
+                    <span>2pm</span>
+                    <span>3pm</span>
+                    <span>4pm</span>
+                    <span>5pm</span>
+                    <span>6pm</span>
+                    <span>7pm</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings-page" class="page-content">
+            <div class="page-header">
+                <h1 class="bx--type-productive-heading-06">Settings</h1>
+                <p class="bx--type-body-long-01" style="color: #525252;">Manage your integrations and preferences</p>
+            </div>
+            
+            <div class="bx--tile">
+                <h3 class="bx--type-productive-heading-03" style="margin-bottom: 2rem;">Connected Services</h3>
+                <div>
+                    <div class="service-card">
+                        <div class="service-info">
+                            <div style="width: 48px; height: 48px; background-color: #161616; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fab fa-github" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>GitHub</h4>
+                                <p>Connected as @yourusername • 3 webhooks active</p>
+                            </div>
+                        </div>
+                        <span class="bx--tag bx--tag--green">Connected</span>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-info">
+                            <div style="width: 48px; height: 48px; background-color: #ff6900; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-database" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Airtable</h4>
+                                <p>2 bases connected • API Key: ••••1234</p>
+                            </div>
+                        </div>
+                        <span class="bx--tag bx--tag--green">Connected</span>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-info">
+                            <div style="width: 48px; height: 48px; background-color: #4a154b; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fab fa-slack" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>Slack</h4>
+                                <p>Workspace: Your Team • 5 channels authorized</p>
+                            </div>
+                        </div>
+                        <span class="bx--tag bx--tag--green">Connected</span>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-info">
+                            <div style="width: 48px; height: 48px; background-color: #1a82e2; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-envelope" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <div class="service-details">
+                                <h4>SendGrid</h4>
+                                <p>Email service • Verified sender configured</p>
+                            </div>
+                        </div>
+                        <span class="bx--tag bx--tag--green">Connected</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="bx--toast-notification bx--toast-notification--success" role="alert" style="position: fixed; bottom: 1rem; right: 1rem; display: none;">
+    <div id="toast" class="bx--toast-notification bx--toast-notification--success" role="alert" style="position: fixed; bottom: 2rem; right: 2rem; display: none; min-width: 320px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
         <div class="bx--toast-notification__details">
             <h3 class="bx--toast-notification__title" id="toast-message">Success!</h3>
         </div>
@@ -181,16 +801,23 @@
             document.getElementById(pageId + '-page').classList.add('active');
             document.querySelectorAll('.bx--header__menu-item').forEach(l => l.classList.remove('active'));
             event.target.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function generateFlow() {
-            showToast('Generating flow...');
-            setTimeout(() => { showPage('create-flow'); showToast('Flow generated!'); }, 1500);
+            showToast('Generating flow with IBM Integration Copilot...');
+            setTimeout(() => { 
+                showPage('create-flow'); 
+                showToast('Flow generated successfully!'); 
+            }, 1500);
         }
 
         function deployFlow() {
             showToast('Deploying flow...');
-            setTimeout(() => { showPage('flows'); showToast('Flow deployed successfully!'); }, 2000);
+            setTimeout(() => { 
+                showPage('flows'); 
+                showToast('Flow deployed successfully!'); 
+            }, 2000);
         }
 
         function showFlowDetail() {
@@ -202,6 +829,11 @@
             document.getElementById('toast-message').textContent = message;
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
+        }
+        
+        // Initialize Lucide icons if available
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
         }
     </script>
 </body>
