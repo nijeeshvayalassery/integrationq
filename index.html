@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegrationIQ - AI-Powered Integration Platform</title>
+    <link rel="stylesheet" href="https://unpkg.com/carbon-components@10.58.0/css/carbon-components.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'IBM Plex Sans', sans-serif; }
+        .page-content { display: none; padding: 2rem; }
+        .page-content.active { display: block; }
+        .bx--header__name { display: flex; align-items: center; gap: 0.5rem; }
+        .stat-card { background: white; padding: 1.5rem; border-left: 4px solid #0f62fe; margin-bottom: 1rem; }
+        .stat-value { font-size: 2.5rem; font-weight: 300; margin: 0.5rem 0; }
+        .flow-node { background: white; border: 2px solid #e0e0e0; padding: 1.5rem; text-align: center; margin: 1rem; transition: all 0.2s; }
+        .flow-node:hover { border-color: #0f62fe; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .chart-bar { flex: 1; background: linear-gradient(to top, #0f62fe, #78a9ff); border-radius: 4px 4px 0 0; transition: all 0.3s; cursor: pointer; }
+        .chart-bar:hover { background: linear-gradient(to top, #0353e9, #4589ff); }
+    </style>
+</head>
+<body class="bx--body">
+    <header class="bx--header" role="banner">
+        <a class="bx--header__name" href="#" onclick="showPage('home')">
+            <i class="fas fa-bolt"></i>
+            <span class="bx--header__name--prefix">IBM</span>
+            IntegrationIQ
+        </a>
+        <nav class="bx--header__nav" aria-label="Main">
+            <ul class="bx--header__menu-bar">
+                <li><a class="bx--header__menu-item active" href="#" onclick="showPage('home')">Home</a></li>
+                <li><a class="bx--header__menu-item" href="#" onclick="showPage('flows')">Flows</a></li>
+                <li><a class="bx--header__menu-item" href="#" onclick="showPage('monitoring')">Monitoring</a></li>
+                <li><a class="bx--header__menu-item" href="#" onclick="showPage('settings')">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="bx--content">
+        <div id="home-page" class="page-content active">
+            <h1 class="bx--type-productive-heading-05">Welcome to IntegrationIQ</h1>
+            <p class="bx--type-body-long-01" style="margin-bottom: 2rem;">Create powerful integrations using natural language.</p>
+            
+            <div class="bx--tile" style="margin-bottom: 2rem;">
+                <h3 class="bx--type-productive-heading-03">Create Integration with Natural Language</h3>
+                <textarea class="bx--text-area" rows="4" placeholder="Example: When a GitHub issue is created, store it in Airtable, send a Slack notification, and email the team"></textarea>
+                <button class="bx--btn bx--btn--primary" style="margin-top: 1rem;" onclick="generateFlow()">
+                    <i class="fas fa-magic"></i> Generate Flow
+                </button>
+            </div>
+
+            <div class="bx--row">
+                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">ACTIVE FLOWS</p><div class="stat-value">12</div></div></div>
+                <div class="bx--col-lg-4"><div class="stat-card" style="border-left-color: #24a148;"><p class="bx--type-label-01">SUCCESS RATE</p><div class="stat-value" style="color: #24a148;">99.8%</div></div></div>
+                <div class="bx--col-lg-4"><div class="stat-card" style="border-left-color: #8a3ffc;"><p class="bx--type-label-01">EXECUTIONS TODAY</p><div class="stat-value">1,247</div></div></div>
+            </div>
+        </div>
+
+        <div id="flows-page" class="page-content">
+            <h1 class="bx--type-productive-heading-05">Integration Flows</h1>
+            <button class="bx--btn bx--btn--primary" onclick="showPage('create-flow')" style="margin-bottom: 2rem;">New Flow</button>
+            
+            <div class="bx--tile bx--tile--clickable" onclick="showFlowDetail()">
+                <h3 class="bx--type-productive-heading-03">GitHub Issues to Team</h3>
+                <p class="bx--type-body-long-01">GitHub → Airtable → Slack → Email</p>
+                <div style="margin-top: 1rem;"><span class="bx--tag bx--tag--green">Active</span> <span>99.8% Success</span></div>
+            </div>
+        </div>
+
+        <div id="create-flow-page" class="page-content">
+            <button class="bx--btn bx--btn--ghost" onclick="showPage('flows')">← Back</button>
+            <h1 class="bx--type-productive-heading-05">New Integration Flow</h1>
+            
+            <div class="bx--tile" style="margin: 2rem 0;">
+                <h3 class="bx--type-productive-heading-03">Generated Flow</h3>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2rem;">
+                    <div class="flow-node" style="width: 250px;"><i class="fab fa-github fa-2x"></i><h4>GitHub</h4><p>Webhook</p></div>
+                    <i class="fas fa-chevron-down" style="color: #0f62fe;"></i>
+                    <div class="flow-node" style="width: 250px;"><i class="fas fa-sync-alt fa-2x" style="color: #0f62fe;"></i><h4>Transform</h4><p>Parse Data</p></div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div class="flow-node" style="width: 180px;"><i class="fas fa-database fa-2x" style="color: #ff6900;"></i><h4>Airtable</h4></div>
+                        <div class="flow-node" style="width: 180px;"><i class="fab fa-slack fa-2x" style="color: #4a154b;"></i><h4>Slack</h4></div>
+                        <div class="flow-node" style="width: 180px;"><i class="fas fa-envelope fa-2x" style="color: #1a82e2;"></i><h4>Email</h4></div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="bx--btn bx--btn--primary" onclick="deployFlow()">Deploy Flow</button>
+        </div>
+
+        <div id="flow-detail-page" class="page-content">
+            <button class="bx--btn bx--btn--ghost" onclick="showPage('flows')">← Back</button>
+            <h1 class="bx--type-productive-heading-05">GitHub Issues to Team</h1>
+            
+            <div class="bx--inline-notification bx--inline-notification--success" style="margin: 2rem 0;">
+                <div class="bx--inline-notification__details">
+                    <div class="bx--inline-notification__text-wrapper">
+                        <p class="bx--inline-notification__title">Self-Healing Alert</p>
+                        <p class="bx--inline-notification__subtitle">Airtable rate limit detected and automatically fixed</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bx--row">
+                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">SUCCESS RATE</p><div class="stat-value" style="color: #24a148;">99.8%</div></div></div>
+                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">EXECUTIONS</p><div class="stat-value">1,247</div></div></div>
+                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">AVG TIME</p><div class="stat-value">245ms</div></div></div>
+            </div>
+        </div>
+
+        <div id="monitoring-page" class="page-content">
+            <h1 class="bx--type-productive-heading-05">Real-time Monitoring</h1>
+            
+            <div class="bx--row" style="margin-bottom: 2rem;">
+                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">STATUS</p><div class="stat-value" style="color: #24a148;">Healthy</div></div></div>
+                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">ACTIVE FLOWS</p><div class="stat-value">12</div></div></div>
+                <div class="bx--col-lg-4"><div class="stat-card"><p class="bx--type-label-01">AVG TIME</p><div class="stat-value">245ms</div></div></div>
+            </div>
+
+            <div class="bx--tile">
+                <h3 class="bx--type-productive-heading-03">Execution Rate (Last Hour)</h3>
+                <div style="height: 300px; display: flex; align-items: flex-end; gap: 0.5rem; padding: 1rem 0;">
+                    <div class="chart-bar" style="height: 60%;"></div>
+                    <div class="chart-bar" style="height: 75%;"></div>
+                    <div class="chart-bar" style="height: 45%;"></div>
+                    <div class="chart-bar" style="height: 80%;"></div>
+                    <div class="chart-bar" style="height: 90%;"></div>
+                    <div class="chart-bar" style="height: 70%;"></div>
+                    <div class="chart-bar" style="height: 85%;"></div>
+                    <div class="chart-bar" style="height: 95%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-page" class="page-content">
+            <h1 class="bx--type-productive-heading-05">Settings</h1>
+            
+            <div class="bx--tile" style="margin: 2rem 0;">
+                <h3 class="bx--type-productive-heading-03">Connected Services</h3>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e0e0e0;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fab fa-github fa-2x"></i>
+                        <div><h4>GitHub</h4><p class="bx--type-label-01">Connected as @yourusername</p></div>
+                    </div>
+                    <span class="bx--tag bx--tag--green">Connected</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e0e0e0;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-database fa-2x" style="color: #ff6900;"></i>
+                        <div><h4>Airtable</h4><p class="bx--type-label-01">2 bases connected</p></div>
+                    </div>
+                    <span class="bx--tag bx--tag--green">Connected</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #e0e0e0;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fab fa-slack fa-2x" style="color: #4a154b;"></i>
+                        <div><h4>Slack</h4><p class="bx--type-label-01">Workspace: Your Team</p></div>
+                    </div>
+                    <span class="bx--tag bx--tag--green">Connected</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-envelope fa-2x" style="color: #1a82e2;"></i>
+                        <div><h4>SendGrid</h4><p class="bx--type-label-01">Email service</p></div>
+                    </div>
+                    <span class="bx--tag bx--tag--green">Connected</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="bx--toast-notification bx--toast-notification--success" role="alert" style="position: fixed; bottom: 1rem; right: 1rem; display: none;">
+        <div class="bx--toast-notification__details">
+            <h3 class="bx--toast-notification__title" id="toast-message">Success!</h3>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId + '-page').classList.add('active');
+            document.querySelectorAll('.bx--header__menu-item').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function generateFlow() {
+            showToast('Generating flow...');
+            setTimeout(() => { showPage('create-flow'); showToast('Flow generated!'); }, 1500);
+        }
+
+        function deployFlow() {
+            showToast('Deploying flow...');
+            setTimeout(() => { showPage('flows'); showToast('Flow deployed successfully!'); }, 2000);
+        }
+
+        function showFlowDetail() {
+            showPage('flow-detail');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+    </script>
+</body>
+</html>
