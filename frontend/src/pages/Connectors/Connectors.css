@@ -1,0 +1,49 @@
+.connectors-page h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #525252;
+  margin-bottom: 2rem;
+}
+
+.connector-tile {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.connector-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: #0f62fe;
+  min-height: 64px;
+}
+
+.connector-icon svg {
+  width: 48px;
+  height: 48px;
+}
+
+.connector-tile h3 {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.connector-tile p {
+  flex: 1;
+  color: #525252;
+  font-size: 0.875rem;
+}
+
+.connector-actions {
+  margin-top: 1rem;
+}
+
+/* Made with Bob */

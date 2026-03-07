@@ -1,0 +1,18 @@
+.workflows-page {
+  max-width: 1400px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin: 0;
+}
+
+/* Made with Bob */

@@ -3,10 +3,24 @@ const logger = require('../utils/logger');
 
 class AIOrchestrationService {
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    this.model = process.env.OPENAI_MODEL || 'gpt-4';
+    // Support both OpenAI and Groq
+    const provider = process.env.AI_PROVIDER || 'openai';
+    
+    if (provider === 'groq') {
+      this.openai = new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+      });
+      this.model = process.env.GROQ_MODEL || 'llama-3.1-70b-versatile';
+    } else {
+      this.openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      this.model = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+    }
+    
+    this.provider = provider;
+    logger.info(`AI Service initialized with provider: ${provider}, model: ${this.model}`);
   }
 
   /**
@@ -156,7 +170,7 @@ Provide JSON response with optimization suggestions.
     const connectorsList = connectors
       .map(
         (c) =>
-          `- ${c.displayName} (${c.name}): ${c.description}\n  Triggers: ${c.capabilities.triggers.map((t) => t.name).join(', ')}\n  Actions: ${c.capabilities.actions.map((a) => a.name).join(', ')}`
+          `- ${c.name}: ${c.description}\n  Actions: ${c.actions ? c.actions.join(', ') : 'N/A'}`
       )
       .join('\n');
 

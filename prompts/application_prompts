@@ -1,0 +1,312 @@
+1. Master System Architecture Prompt
+
+Use this first to generate the overall architecture.
+
+You are a Principal Software Architect.
+
+Design the full system architecture for an AI-powered integration platform that converts natural language prompts into executable integration workflows.
+
+Example user prompt:
+"When a new issue is created in GitHub, send a Slack message to #alerts channel."
+
+The system should:
+- Understand natural language prompts
+- Identify triggers, actions, conditions
+- Generate executable integration workflows
+- Configure third-party services like GitHub, Slack, Jira, REST APIs
+- Execute workflows reliably
+
+Design the architecture including:
+
+1. System components
+2. Microservices architecture
+3. AI services
+4. Workflow execution engine
+5. Connector framework
+6. Event-driven architecture
+7. Data storage
+8. Authentication and secrets management
+9. Observability
+10. Deployment architecture
+
+Include:
+- Architecture diagram
+- Component responsibilities
+- Data flow
+- Technology stack
+- Scalability considerations
+2. Frontend Application Prompt
+
+This generates the UI application.
+
+You are a senior frontend architect.
+
+Design a modern frontend application for an AI-powered integration platform that allows users to create integrations using natural language.
+
+Example user flow:
+User types:
+"When a GitHub issue is created, send Slack message to #alerts"
+
+The frontend should provide:
+
+1. Natural language prompt input UI
+2. Generated workflow preview
+3. Visual workflow editor (node-based flow builder)
+4. Connector configuration screens
+5. OAuth authentication for connectors
+6. Integration execution logs
+7. Integration testing tools
+8. Monitoring dashboard
+9. Error notifications
+
+Technical requirements:
+- React or Next.js
+- TypeScript
+- Component architecture
+- State management
+- API communication
+- Authentication
+- Realtime updates
+
+Provide:
+- Frontend architecture
+- Page structure
+- Component hierarchy
+- State management design
+- API contracts
+- Example UI wireframes
+3. Backend API Service Prompt
+
+Generates the core backend application.
+
+You are a backend platform architect.
+
+Design the backend services for an AI-powered integration builder that converts natural language prompts into executable workflows.
+
+Responsibilities of backend:
+
+1. Receive natural language prompts
+2. Send prompts to AI service
+3. Convert AI response into workflow definition
+4. Store workflows
+5. Manage connectors
+6. Execute integration workflows
+7. Manage authentication for third-party services
+8. Provide APIs for frontend
+
+Design:
+
+- API gateway
+- Integration service
+- Workflow management service
+- Connector management service
+- Authentication service
+- AI orchestration service
+
+Provide:
+- Microservices architecture
+- API design
+- Data models
+- Technology stack
+- Security design
+4. AI Orchestration Service Prompt
+
+This is the core AI intelligence layer.
+
+You are an AI platform architect.
+
+Design an AI orchestration service that converts natural language prompts into integration workflows.
+
+Example prompt:
+"When a GitHub issue is created, send a Slack message to #alerts"
+
+The AI system must:
+
+1. Parse intent
+2. Detect triggers
+3. Detect actions
+4. Identify required connectors
+5. Generate workflow definition
+6. Validate workflow
+
+Architecture should include:
+
+- Prompt processing pipeline
+- LLM orchestration
+- Tool selection
+- Schema mapping
+- Workflow generation
+
+Use techniques like:
+
+- LLM function calling
+- RAG for connector documentation
+- Structured output generation
+
+Provide:
+- AI pipeline
+- Prompt engineering
+- Schema design
+- Validation logic
+- Example output JSON workflow
+5. Integration Connector Framework Prompt
+
+This generates the plugin system for integrations.
+
+You are a platform integration architect.
+
+Design a pluggable connector framework for an integration platform that connects to external services like:
+
+- GitHub
+- Slack
+- Jira
+- REST APIs
+- Databases
+- Email
+- Webhooks
+
+The connector framework should support:
+
+1. Triggers
+2. Actions
+3. Authentication
+4. Rate limiting
+5. Retry logic
+6. Schema mapping
+7. Webhook support
+
+Design:
+
+- Connector SDK
+- Connector registry
+- Trigger system
+- Action execution system
+
+Provide:
+- Connector architecture
+- Connector lifecycle
+- Example GitHub connector
+- Example Slack connector
+6. Workflow Execution Engine Prompt
+
+This creates the engine that runs integrations.
+
+You are a distributed systems architect.
+
+Design a workflow execution engine for an integration platform.
+
+The engine must:
+
+- Execute workflows generated from AI
+- Support triggers (webhook, event, schedule)
+- Execute multiple steps
+- Support retries
+- Handle failures
+- Support branching and conditions
+
+Example workflow:
+
+Trigger: GitHub Issue Created
+Action: Send Slack message
+
+Design:
+
+- Workflow engine architecture
+- Task queue system
+- Event processing
+- State management
+- Failure recovery
+
+Provide:
+- Execution model
+- Workflow definition schema
+- Example execution pipeline
+7. AI Agents Prompt
+
+If you want multi-agent AI architecture.
+
+You are designing a multi-agent AI system.
+
+Create an AI agent architecture for an integration builder platform.
+
+Agents should include:
+
+Prompt Understanding Agent
+- Extract intent from natural language
+
+Connector Discovery Agent
+- Identify which services are required
+
+Workflow Builder Agent
+- Build integration flow
+
+Validation Agent
+- Check workflow correctness
+
+Configuration Agent
+- Suggest connector configuration
+
+Explain:
+- Agent communication
+- Agent orchestration
+- Memory design
+- Tool usage
+8. DevOps and Deployment Prompt
+You are a cloud infrastructure architect.
+
+Design the deployment architecture for an AI-powered integration platform.
+
+Requirements:
+
+- Cloud native
+- Kubernetes deployment
+- Microservices architecture
+- Event driven system
+- Observability
+
+Include:
+
+- API gateway
+- Kubernetes services
+- Message queues
+- Databases
+- AI services
+- Secrets management
+
+Provide:
+
+- Deployment architecture
+- CI/CD pipeline
+- Monitoring stack
+- Scaling strategy
+Recommended Applications in Your System
+
+You will end up with these applications/services:
+
+Frontend App
+   |
+API Gateway
+   |
+Backend Services
+   ├─ Workflow Service
+   ├─ Connector Service
+   ├─ Execution Engine
+   ├─ Auth Service
+   └─ AI Orchestration Service
+          |
+       AI Agents
+          |
+Connector Framework
+   ├─ GitHub Connector
+   ├─ Slack Connector
+   ├─ REST Connector
+   └─ Webhook Connector
+
+💡 Hackathon Tip (important)
+If this is for your IBM Integration Hackathon, the killer demo flow would be:
+
+User Prompt →
+AI generates flow →
+UI shows visual workflow →
+User clicks Deploy →
+Integration runs live.

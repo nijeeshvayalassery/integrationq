@@ -1,0 +1,48 @@
+.workflow-detail {
+  max-width: 1200px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin: 0 0 0.5rem 0;
+}
+
+.description {
+  color: #525252;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.workflow-steps {
+  background: white;
+  padding: 2rem;
+  border-radius: 4px;
+}
+
+.workflow-steps h2 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.workflow-steps pre {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+/* Made with Bob */

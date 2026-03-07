@@ -85,23 +85,37 @@ class ConnectorService {
    */
   async executeAction(connectorName, config, data) {
     try {
-      const connector = this.connectors.get(connectorName);
+      // Make connector lookup case-insensitive
+      const normalizedName = connectorName.toLowerCase();
+      const connector = this.connectors.get(normalizedName);
       
       if (!connector) {
         throw new Error(`Connector not found: ${connectorName}`);
       }
 
       // Get connection credentials
+      let credentials;
+      
+      // Try to find connection in database
       const connection = await Connection.findOne({
         connectorId: config.connectionId,
         status: 'active',
       });
 
-      if (!connection) {
-        throw new Error(`No active connection found for ${connectorName}`);
+      if (connection) {
+        credentials = connection.getDecryptedCredentials();
+      } else {
+        // Demo mode: Use environment credentials if no connection found
+        logger.info('No connection found, using environment credentials', {
+          connector: normalizedName,
+        });
+        
+        credentials = this._getEnvCredentials(normalizedName);
+        
+        if (!credentials) {
+          throw new Error(`No active connection found for ${connectorName} and no environment credentials configured`);
+        }
       }
-
-      const credentials = connection.getDecryptedCredentials();
 
       logger.info('Executing connector action', {
         connector: connectorName,
@@ -134,13 +148,51 @@ class ConnectorService {
    * Get all available connectors
    */
   async getConnectors(filters = {}) {
-    const query = { isActive: true };
-    
+    // Return hardcoded connectors for demo
+    const connectors = [
+      {
+        _id: 'github',
+        name: 'GitHub',
+        description: 'Connect to GitHub to manage issues, pull requests, and repositories',
+        category: 'Development',
+        icon: 'github',
+        isActive: true,
+        actions: ['create_issue', 'get_issues', 'update_issue'],
+      },
+      {
+        _id: 'airtable',
+        name: 'Airtable',
+        description: 'Connect to Airtable to manage records and databases',
+        category: 'Database',
+        icon: 'airtable',
+        isActive: true,
+        actions: ['create_record', 'get_records', 'update_record'],
+      },
+      {
+        _id: 'slack',
+        name: 'Slack',
+        description: 'Send messages and notifications to Slack channels',
+        category: 'Communication',
+        icon: 'slack',
+        isActive: true,
+        actions: ['send_message', 'create_channel'],
+      },
+      {
+        _id: 'sendgrid',
+        name: 'SendGrid',
+        description: 'Send transactional and marketing emails via SendGrid',
+        category: 'Email',
+        icon: 'sendgrid',
+        isActive: true,
+        actions: ['send_email'],
+      },
+    ];
+
     if (filters.category) {
-      query.category = filters.category;
+      return connectors.filter(c => c.category === filters.category);
     }
 
-    return await Connector.find(query).lean();
+    return connectors;
   }
 
   /**
@@ -312,22 +364,39 @@ class ConnectorService {
 
   // SendGrid Actions
   async _sendgridSendEmail(config, data, apiKey) {
-    const { from, to, subject, html, text } = data;
+    // Merge config parameters with data, with data taking precedence
+    const emailData = {
+      from: data?.from || config.parameters?.from || 'noreply@integrationiq.com',
+      to: data?.to || config.parameters?.to || config.parameters?.recipient || 'demo@example.com',
+      subject: data?.subject || config.parameters?.subject || 'GitHub Issue Notification',
+      html: data?.html || data?.text || config.parameters?.html || config.parameters?.text || this._buildDefaultEmailContent(data),
+    };
+
+    // Validate required fields
+    if (!emailData.to || emailData.to === 'demo@example.com') {
+      logger.warn('SendGrid: No recipient email found in workflow config, using demo email');
+    }
+    
+    logger.info('Sending email via SendGrid', {
+      from: emailData.from,
+      to: emailData.to,
+      subject: emailData.subject,
+    });
     
     const response = await axios.post(
       'https://api.sendgrid.com/v3/mail/send',
       {
         personalizations: [
           {
-            to: [{ email: to }],
-            subject,
+            to: [{ email: emailData.to }],
+            subject: emailData.subject,
           },
         ],
-        from: { email: from },
+        from: { email: emailData.from },
         content: [
           {
             type: 'text/html',
-            value: html || text,
+            value: emailData.html,
           },
         ],
       },
@@ -339,7 +408,12 @@ class ConnectorService {
       }
     );
 
-    return { success: true, messageId: response.headers['x-message-id'] };
+    return {
+      success: true,
+      messageId: response.headers['x-message-id'],
+      sentTo: emailData.to,
+      subject: emailData.subject,
+    };
   }
 
   /**
@@ -347,7 +421,9 @@ class ConnectorService {
    */
   async testConnection(connectorName, credentials) {
     try {
-      const connector = this.connectors.get(connectorName);
+      // Make connector lookup case-insensitive
+      const normalizedName = connectorName.toLowerCase();
+      const connector = this.connectors.get(normalizedName);
       
       if (!connector) {
         throw new Error(`Connector not found: ${connectorName}`);
@@ -407,6 +483,189 @@ class ConnectorService {
         message: error.response?.data?.message || error.message,
       };
     }
+  }
+
+  /**
+   * Test connector connection using environment credentials
+   */
+  async testConnectionWithEnv(connectorName) {
+    try {
+      // Make connector lookup case-insensitive
+      const normalizedName = connectorName.toLowerCase();
+      const connector = this.connectors.get(normalizedName);
+      
+      if (!connector) {
+        return {
+          success: false,
+          message: `Connector not found: ${connectorName}`,
+        };
+      }
+
+      let credentials = {};
+      let testResult;
+
+      // Get credentials from environment
+      switch (connectorName) {
+        case 'github':
+          if (!process.env.GITHUB_PAT) {
+            return {
+              success: false,
+              message: 'GitHub PAT not configured in environment',
+            };
+          }
+          credentials = { token: process.env.GITHUB_PAT };
+          
+          // Test GitHub connection
+          const githubResponse = await axios.get('https://api.github.com/user', {
+            headers: {
+              Authorization: `token ${credentials.token}`,
+            },
+          });
+          
+          testResult = {
+            success: true,
+            message: 'GitHub connection successful',
+            data: {
+              username: githubResponse.data.login,
+              name: githubResponse.data.name,
+            },
+          };
+          break;
+        
+        case 'sendgrid':
+          if (!process.env.SENDGRID_API_KEY) {
+            return {
+              success: false,
+              message: 'SendGrid API key not configured in environment',
+            };
+          }
+          credentials = { apiKey: process.env.SENDGRID_API_KEY };
+          
+          // Test SendGrid connection
+          const sendgridResponse = await axios.get('https://api.sendgrid.com/v3/user/profile', {
+            headers: {
+              Authorization: `Bearer ${credentials.apiKey}`,
+            },
+          });
+          
+          testResult = {
+            success: true,
+            message: 'SendGrid connection successful',
+            data: {
+              email: sendgridResponse.data.email,
+            },
+          };
+          break;
+        
+        case 'airtable':
+          if (!process.env.AIRTABLE_API_KEY) {
+            return {
+              success: false,
+              message: 'Airtable API key not configured in environment',
+            };
+          }
+          return {
+            success: false,
+            message: 'Airtable credentials not configured. Please add AIRTABLE_API_KEY to .env',
+          };
+        
+        case 'slack':
+          if (!process.env.SLACK_CLIENT_ID || !process.env.SLACK_CLIENT_SECRET) {
+            return {
+              success: false,
+              message: 'Slack credentials not configured in environment',
+            };
+          }
+          return {
+            success: false,
+            message: 'Slack credentials not configured. Please add SLACK_CLIENT_ID and SLACK_CLIENT_SECRET to .env',
+          };
+        
+        default:
+          return {
+            success: false,
+            message: `Test not implemented for ${connectorName}`,
+          };
+      }
+
+      logger.info('Connection test with env successful', {
+        connector: connectorName,
+      });
+
+      return testResult;
+    } catch (error) {
+      logger.error('Connection test with env failed', {
+        connector: connectorName,
+        error: error.message,
+      });
+      
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message,
+      };
+    }
+  }
+
+  /**
+   * Get credentials from environment variables (demo mode)
+   */
+  _getEnvCredentials(connectorName) {
+    switch (connectorName) {
+      case 'github':
+        if (process.env.GITHUB_PAT) {
+          return { token: process.env.GITHUB_PAT };
+        }
+        break;
+      
+      case 'sendgrid':
+        if (process.env.SENDGRID_API_KEY) {
+          return { apiKey: process.env.SENDGRID_API_KEY };
+        }
+        break;
+      
+      case 'slack':
+        if (process.env.SLACK_CLIENT_ID && process.env.SLACK_CLIENT_SECRET) {
+          return {
+            clientId: process.env.SLACK_CLIENT_ID,
+            clientSecret: process.env.SLACK_CLIENT_SECRET,
+          };
+        }
+        break;
+      
+      case 'airtable':
+        if (process.env.AIRTABLE_API_KEY) {
+          return { apiKey: process.env.AIRTABLE_API_KEY };
+        }
+        break;
+    }
+    
+    return null;
+  }
+
+  /**
+   * Build default email content from workflow data
+   */
+  _buildDefaultEmailContent(data) {
+    if (!data) {
+      return '<p>This is an automated notification from IntegrationIQ.</p>';
+    }
+    
+    // Try to build content from GitHub issue data
+    if (data.title || data.html_url) {
+      return `
+        <h2>New GitHub Issue Created</h2>
+        <p><strong>Title:</strong> ${data.title || 'N/A'}</p>
+        <p><strong>URL:</strong> <a href="${data.html_url || '#'}">${data.html_url || 'N/A'}</a></p>
+        <p><strong>Number:</strong> #${data.number || 'N/A'}</p>
+        ${data.body ? `<p><strong>Description:</strong></p><p>${data.body}</p>` : ''}
+      `;
+    }
+    
+    // Generic content
+    return `
+      <p>This is an automated notification from IntegrationIQ.</p>
+      <pre>${JSON.stringify(data, null, 2)}</pre>
+    `;
   }
 }
 

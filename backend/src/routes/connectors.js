@@ -72,6 +72,27 @@ router.post('/test', authenticate, validate(schemas.testConnection), async (req,
 });
 
 /**
+ * @route   POST /api/v1/connectors/test-env/:name
+ * @desc    Test connector connection using env credentials
+ * @access  Private
+ */
+router.post('/test-env/:name', authenticate, async (req, res, next) => {
+  try {
+    const connectorName = req.params.name.toLowerCase();
+    
+    const result = await connectorService.testConnectionWithEnv(connectorName);
+    
+    res.json({
+      success: result.success,
+      message: result.message,
+      data: result.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * @route   GET /api/v1/connectors/connections
  * @desc    Get all user connections
  * @access  Private

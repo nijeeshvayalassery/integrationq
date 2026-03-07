@@ -9,7 +9,7 @@ const { validate, schemas } = require('../middleware/validation');
 
 /**
  * @route   POST /api/v1/workflows/generate
- * @desc    Generate workflow from natural language
+ * @desc    Generate workflow from natural language and save it
  * @access  Private
  */
 router.post('/generate', authenticate, validate(schemas.generateWorkflow), async (req, res, next) => {
@@ -22,10 +22,30 @@ router.post('/generate', authenticate, validate(schemas.generateWorkflow), async
     // Generate workflow using AI
     const result = await aiOrchestrationService.generateWorkflow(prompt, connectors);
     
+    // Extract workflow data and explicitly set status to active
+    const { status: _ignoredStatus, ...workflowFields } = result.workflow;
+    
+    // Save the generated workflow to database as active (ready to execute)
+    const workflowData = {
+      ...workflowFields,
+      userId: req.userId,
+      status: 'active', // Always set to active so it can be executed immediately
+      metadata: {
+        ...workflowFields.metadata,
+        aiGenerated: true,
+        generatedFrom: prompt,
+        model: result.metadata.model,
+        tokensUsed: result.metadata.tokensUsed,
+      },
+    };
+    
+    const workflow = new Workflow(workflowData);
+    await workflow.save();
+    
     res.json({
       success: true,
-      message: 'Workflow generated successfully',
-      data: result,
+      message: 'Workflow generated and saved successfully',
+      data: workflow,
     });
   } catch (error) {
     next(error);
@@ -88,6 +108,45 @@ router.get('/', authenticate, async (req, res, next) => {
       success: true,
       data: {
         workflows,
+        total,
+        limit: parseInt(limit),
+        skip: parseInt(skip),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route   GET /api/v1/workflows/executions
+ * @desc    Get all execution logs for user
+ * @access  Private
+ */
+router.get('/executions', authenticate, async (req, res, next) => {
+  try {
+    const { limit = 10, skip = 0, status } = req.query;
+    const ExecutionLog = require('../models/ExecutionLog');
+    
+    const query = { userId: req.userId };
+    
+    if (status) {
+      query.status = status;
+    }
+    
+    const executions = await ExecutionLog.find(query)
+      .populate('workflowId', 'name')
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(parseInt(skip))
+      .lean();
+    
+    const total = await ExecutionLog.countDocuments(query);
+    
+    res.json({
+      success: true,
+      data: {
+        executions,
         total,
         limit: parseInt(limit),
         skip: parseInt(skip),
@@ -336,7 +395,6 @@ router.post('/:id/pause', authenticate, async (req, res, next) => {
     next(error);
   }
 });
-
 module.exports = router;
 
 // Made with Bob
