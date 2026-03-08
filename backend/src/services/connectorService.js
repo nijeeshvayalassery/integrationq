@@ -692,21 +692,127 @@ class ConnectorService {
       return '<p>This is an automated notification from IntegrationIQ.</p>';
     }
     
-    // Try to build content from GitHub issue data
-    if (data.title || data.html_url) {
+    // Handle array of GitHub issues
+    if (Array.isArray(data)) {
+      if (data.length === 0) {
+        return `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #24292e;">✅ No Open Issues</h2>
+            <p style="color: #586069; font-size: 16px;">
+              Great news! There are currently no open issues in the repository.
+            </p>
+            <p style="color: #586069; font-size: 14px; margin-top: 20px;">
+              <em>This is an automated notification from IntegrationIQ</em>
+            </p>
+          </div>
+        `;
+      }
+      
+      const issueCount = data.length;
+      const issuesHtml = data.map((issue, index) => `
+        <div style="border-left: 4px solid #0366d6; padding-left: 16px; margin-bottom: 24px;">
+          <h3 style="color: #24292e; margin: 0 0 8px 0;">
+            <a href="${issue.html_url}" style="color: #0366d6; text-decoration: none;">
+              #${issue.number}: ${issue.title}
+            </a>
+          </h3>
+          <p style="color: #586069; font-size: 14px; margin: 4px 0;">
+            <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">
+              ${issue.state}
+            </span>
+            Opened by <strong>${issue.user?.login || 'Unknown'}</strong>
+            ${issue.created_at ? `on ${new Date(issue.created_at).toLocaleDateString()}` : ''}
+          </p>
+          ${issue.body ? `
+            <p style="color: #24292e; font-size: 14px; margin-top: 12px; line-height: 1.5;">
+              ${issue.body.substring(0, 200)}${issue.body.length > 200 ? '...' : ''}
+            </p>
+          ` : ''}
+          ${issue.labels && issue.labels.length > 0 ? `
+            <p style="margin-top: 8px;">
+              ${issue.labels.map(label => `
+                <span style="background: #${label.color || 'e1e4e8'}; color: #000; padding: 2px 8px; border-radius: 3px; font-size: 12px; margin-right: 4px;">
+                  ${label.name}
+                </span>
+              `).join('')}
+            </p>
+          ` : ''}
+        </div>
+      `).join('');
+      
       return `
-        <h2>New GitHub Issue Created</h2>
-        <p><strong>Title:</strong> ${data.title || 'N/A'}</p>
-        <p><strong>URL:</strong> <a href="${data.html_url || '#'}">${data.html_url || 'N/A'}</a></p>
-        <p><strong>Number:</strong> #${data.number || 'N/A'}</p>
-        ${data.body ? `<p><strong>Description:</strong></p><p>${data.body}</p>` : ''}
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #24292e;">📋 GitHub Issues Report</h2>
+          <p style="color: #586069; font-size: 16px;">
+            Found <strong>${issueCount}</strong> open issue${issueCount !== 1 ? 's' : ''} in the repository:
+          </p>
+          <div style="margin-top: 24px;">
+            ${issuesHtml}
+          </div>
+          <hr style="border: none; border-top: 1px solid #e1e4e8; margin: 32px 0;">
+          <p style="color: #586069; font-size: 14px;">
+            <em>This is an automated notification from IntegrationIQ</em>
+          </p>
+        </div>
       `;
     }
     
-    // Generic content
+    // Handle single GitHub issue
+    if (data.title || data.html_url) {
+      return `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #24292e;">🔔 New GitHub Issue</h2>
+          <div style="border-left: 4px solid #0366d6; padding-left: 16px; margin: 24px 0;">
+            <h3 style="color: #24292e; margin: 0 0 8px 0;">
+              <a href="${data.html_url}" style="color: #0366d6; text-decoration: none;">
+                #${data.number}: ${data.title}
+              </a>
+            </h3>
+            <p style="color: #586069; font-size: 14px; margin: 4px 0;">
+              <span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">
+                ${data.state || 'open'}
+              </span>
+              Opened by <strong>${data.user?.login || 'Unknown'}</strong>
+              ${data.created_at ? `on ${new Date(data.created_at).toLocaleDateString()}` : ''}
+            </p>
+            ${data.body ? `
+              <div style="background: #f6f8fa; padding: 16px; border-radius: 6px; margin-top: 16px;">
+                <p style="color: #24292e; font-size: 14px; margin: 0; line-height: 1.6;">
+                  ${data.body}
+                </p>
+              </div>
+            ` : ''}
+            ${data.labels && data.labels.length > 0 ? `
+              <p style="margin-top: 12px;">
+                ${data.labels.map(label => `
+                  <span style="background: #${label.color || 'e1e4e8'}; color: #000; padding: 2px 8px; border-radius: 3px; font-size: 12px; margin-right: 4px;">
+                    ${label.name}
+                  </span>
+                `).join('')}
+              </p>
+            ` : ''}
+          </div>
+          <p style="color: #586069; font-size: 14px; margin-top: 32px;">
+            <em>This is an automated notification from IntegrationIQ</em>
+          </p>
+        </div>
+      `;
+    }
+    
+    // Generic content for other data types
     return `
-      <p>This is an automated notification from IntegrationIQ.</p>
-      <pre>${JSON.stringify(data, null, 2)}</pre>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #24292e;">📬 Workflow Notification</h2>
+        <p style="color: #586069; font-size: 16px;">
+          Your workflow has completed successfully.
+        </p>
+        <div style="background: #f6f8fa; padding: 16px; border-radius: 6px; margin: 24px 0;">
+          <pre style="margin: 0; overflow-x: auto; font-size: 12px;">${JSON.stringify(data, null, 2)}</pre>
+        </div>
+        <p style="color: #586069; font-size: 14px;">
+          <em>This is an automated notification from IntegrationIQ</em>
+        </p>
+      </div>
     `;
   }
 }
