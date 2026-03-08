@@ -25,6 +25,48 @@ router.post('/generate', authenticate, validate(schemas.generateWorkflow), async
     // Extract workflow data and explicitly set status to active
     const { status: _ignoredStatus, ...workflowFields } = result.workflow;
     
+    // Ensure trigger has required fields
+    if (!workflowFields.trigger) {
+      workflowFields.trigger = {
+        id: 'trigger-1',
+        type: 'trigger',
+        connector: 'manual',
+        config: { event: 'manual' },
+      };
+    } else {
+      if (!workflowFields.trigger.id) workflowFields.trigger.id = 'trigger-1';
+      if (!workflowFields.trigger.type) workflowFields.trigger.type = 'trigger';
+      if (!workflowFields.trigger.connector) workflowFields.trigger.connector = 'manual';
+      if (!workflowFields.trigger.config) workflowFields.trigger.config = { event: 'manual' };
+    }
+    
+    // Normalize and fix steps structure
+    if (workflowFields.steps && Array.isArray(workflowFields.steps)) {
+      workflowFields.steps = workflowFields.steps.map((step, index) => {
+        // Ensure step has required fields
+        const normalizedStep = {
+          id: step.id || `step-${index + 1}`,
+          type: step.type || 'action',
+          name: step.name || `Step ${index + 1}`,
+          connector: step.connector ? step.connector.toLowerCase() : 'unknown',
+          action: step.action || step.config?.action || getDefaultAction(step.connector),
+          config: step.config || {},
+        };
+        
+        // Ensure config has action field
+        if (!normalizedStep.config.action) {
+          normalizedStep.config.action = normalizedStep.action;
+        }
+        
+        // Ensure config has parameters
+        if (!normalizedStep.config.parameters) {
+          normalizedStep.config.parameters = {};
+        }
+        
+        return normalizedStep;
+      });
+    }
+    
     // Save the generated workflow to database as active (ready to execute)
     const workflowData = {
       ...workflowFields,
@@ -51,6 +93,17 @@ router.post('/generate', authenticate, validate(schemas.generateWorkflow), async
     next(error);
   }
 });
+
+// Helper function to get default action for a connector
+function getDefaultAction(connector) {
+  const defaults = {
+    github: 'get_issues',
+    sendgrid: 'send_email',
+    slack: 'send_message',
+    airtable: 'get_records',
+  };
+  return defaults[connector?.toLowerCase()] || 'execute';
+}
 
 /**
  * @route   POST /api/v1/workflows
@@ -141,12 +194,19 @@ router.get('/executions', authenticate, async (req, res, next) => {
       .skip(parseInt(skip))
       .lean();
     
+    // Map field names to match frontend expectations
+    const mappedExecutions = executions.map(exec => ({
+      ...exec,
+      workflow: exec.workflowId, // Map workflowId to workflow
+      startedAt: exec.startTime,  // Map startTime to startedAt
+    }));
+    
     const total = await ExecutionLog.countDocuments(query);
     
     res.json({
       success: true,
       data: {
-        executions,
+        executions: mappedExecutions,
         total,
         limit: parseInt(limit),
         skip: parseInt(skip),

@@ -67,12 +67,14 @@ class ConnectorService {
 
     // SendGrid Connector
     this.connectors.set('sendgrid', {
-      executeAction: async (action, config, data, credentials) => {
+      executeAction: async (action, parameters, data, credentials) => {
         const { apiKey } = credentials;
         
         switch (action) {
           case 'send_email':
-            return await this._sendgridSendEmail(config, data, apiKey);
+            // parameters is actually config.parameters from executeAction call
+            // Wrap it back into a config object for _sendgridSendEmail
+            return await this._sendgridSendEmail({ parameters }, data, apiKey);
           default:
             throw new Error(`Unknown SendGrid action: ${action}`);
         }
@@ -217,6 +219,7 @@ class ConnectorService {
         headers: {
           Authorization: `token ${token}`,
           Accept: 'application/vnd.github.v3+json',
+          'User-Agent': 'IntegrationIQ',
         },
       }
     );
@@ -225,7 +228,27 @@ class ConnectorService {
   }
 
   async _githubGetIssues(config, token) {
-    const { owner, repo, state = 'open' } = config.parameters;
+    // Extract parameters with fallbacks
+    const parameters = config.parameters || config;
+    let owner = parameters.owner || parameters.repository?.split('/')[0];
+    let repo = parameters.repo || parameters.repository?.split('/')[1];
+    const state = parameters.state || 'open';
+    
+    // Fallback to environment variable if not provided
+    if (!owner || !repo) {
+      const defaultRepo = process.env.GITHUB_DEFAULT_REPO || 'nijeeshvayalassery/integrationq';
+      [owner, repo] = defaultRepo.split('/');
+    }
+    
+    if (!owner || !repo) {
+      throw new Error('GitHub repository owner and name are required. Please provide "owner" and "repo" in config, or set GITHUB_DEFAULT_REPO environment variable.');
+    }
+    
+    logger.info('Fetching GitHub issues', {
+      owner,
+      repo,
+      state,
+    });
     
     const response = await axios.get(
       `https://api.github.com/repos/${owner}/${repo}/issues`,
@@ -234,9 +257,14 @@ class ConnectorService {
         headers: {
           Authorization: `token ${token}`,
           Accept: 'application/vnd.github.v3+json',
+          'User-Agent': 'IntegrationIQ',
         },
       }
     );
+
+    logger.info('GitHub issues fetched', {
+      count: response.data.length,
+    });
 
     return response.data;
   }
@@ -251,6 +279,7 @@ class ConnectorService {
         headers: {
           Authorization: `token ${token}`,
           Accept: 'application/vnd.github.v3+json',
+          'User-Agent': 'IntegrationIQ',
         },
       }
     );
@@ -364,18 +393,29 @@ class ConnectorService {
 
   // SendGrid Actions
   async _sendgridSendEmail(config, data, apiKey) {
-    // Merge config parameters with data, with data taking precedence
+    // Debug logging
+    logger.info('SendGrid _sendgridSendEmail called with:', {
+      'config.parameters': config.parameters,
+      'config.parameters.to': config.parameters?.to,
+      'data': data,
+      'data.to': data?.to,
+    });
+    
+    // Priority order: config.parameters > data > defaults
+    // This ensures workflow config takes precedence
     const emailData = {
-      from: data?.from || config.parameters?.from || 'noreply@integrationiq.com',
-      to: data?.to || config.parameters?.to || config.parameters?.recipient || 'demo@example.com',
-      subject: data?.subject || config.parameters?.subject || 'GitHub Issue Notification',
-      html: data?.html || data?.text || config.parameters?.html || config.parameters?.text || this._buildDefaultEmailContent(data),
+      from: config.parameters?.from || data?.from || 'nijeeshvayalassery@gmail.com',
+      to: config.parameters?.to || config.parameters?.recipient || data?.to || 'nijeeshvayalassery@gmail.com',
+      subject: config.parameters?.subject || data?.subject || 'GitHub Issue Notification',
+      html: config.parameters?.html || config.parameters?.text || data?.html || data?.text || this._buildDefaultEmailContent(data),
     };
 
     // Validate required fields
-    if (!emailData.to || emailData.to === 'demo@example.com') {
-      logger.warn('SendGrid: No recipient email found in workflow config, using demo email');
+    if (!config.parameters?.to && !config.parameters?.recipient && !data?.to) {
+      logger.warn('SendGrid: No recipient email found in workflow config, using default email:', emailData.to);
     }
+    
+    logger.info('SendGrid final emailData:', emailData);
     
     logger.info('Sending email via SendGrid', {
       from: emailData.from,
@@ -435,6 +475,7 @@ class ConnectorService {
           await axios.get('https://api.github.com/user', {
             headers: {
               Authorization: `token ${credentials.token}`,
+              'User-Agent': 'IntegrationIQ',
             },
           });
           break;
@@ -519,6 +560,7 @@ class ConnectorService {
           const githubResponse = await axios.get('https://api.github.com/user', {
             headers: {
               Authorization: `token ${credentials.token}`,
+              'User-Agent': 'IntegrationIQ',
             },
           });
           

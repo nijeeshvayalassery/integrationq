@@ -213,7 +213,25 @@ Rules:
 3. Include proper error handling
 4. Add appropriate filters and conditions
 5. Use realistic configuration values
-6. Return valid JSON only`;
+6. Return valid JSON only
+
+IMPORTANT Email Configuration:
+- For SendGrid connector, ALWAYS extract email addresses from the user's prompt
+- If user mentions "send email to X" or "notify X", use that email in the "to" parameter
+- Default sender email: "nijeeshvayalassery@gmail.com"
+- Default recipient email (if not specified): "nijeeshvayalassery@gmail.com"
+- Example SendGrid step with email extraction:
+  {
+    "connector": "sendgrid",
+    "action": "send_email",
+    "config": {
+      "parameters": {
+        "from": "nijeeshvayalassery@gmail.com",
+        "to": "extracted-email@example.com",
+        "subject": "Relevant subject based on workflow"
+      }
+    }
+  }`;
   }
 
   /**
