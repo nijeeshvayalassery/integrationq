@@ -5,6 +5,7 @@ import { Play, Edit, TrashCan } from '@carbon/icons-react';
 import { workflowAPI } from '../../services/api';
 import { Loading } from '../../components/common/Loading';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
+import { WorkflowVisualization } from '../../components/WorkflowVisualization/WorkflowVisualization';
 import { Workflow } from '../../types';
 import './WorkflowDetail.css';
 
@@ -86,10 +87,13 @@ export const WorkflowDetail: React.FC = () => {
         <h2>Workflow Steps</h2>
         <Accordion>
           {workflow.steps.map((step, index) => (
-            <AccordionItem title={`Step ${index + 1}: ${step.action}`} key={index}>
+            <AccordionItem
+              title={`Step ${index + 1}: ${step.action || `${step.connector} ${step.type}`}`}
+              key={index}
+            >
               <p><strong>Type:</strong> {step.type}</p>
               <p><strong>Connector:</strong> {step.connector}</p>
-              <p><strong>Action:</strong> {step.action}</p>
+              <p><strong>Action:</strong> {step.action || 'Not specified'}</p>
               {step.config && (
                 <pre>{JSON.stringify(step.config, null, 2)}</pre>
               )}
@@ -97,6 +101,9 @@ export const WorkflowDetail: React.FC = () => {
           ))}
         </Accordion>
       </div>
+
+      {/* Workflow Visualization */}
+      <WorkflowVisualization workflow={workflow} />
     </div>
   );
 };

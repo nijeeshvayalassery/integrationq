@@ -1,12 +1,164 @@
+.monitoring-page {
+  padding: 2rem;
+}
+
 .monitoring-page h1 {
-  font-size: 2rem;
-  font-weight: 300;
   margin-bottom: 0.5rem;
 }
 
-.subtitle {
+.monitoring-page .subtitle {
   color: #525252;
   margin-bottom: 2rem;
+}
+
+/* Execution Details Modal */
+.execution-details {
+  padding: 1rem 0;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f4f4f4;
+  border-radius: 4px;
+}
+
+.detail-section h4 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.detail-section p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Error Section */
+.error-section {
+  background: #fff1f1;
+  border-left: 4px solid #da1e28;
+}
+
+.error-box {
+  padding: 0.5rem;
+}
+
+.error-box p {
+  margin-bottom: 0.75rem;
+}
+
+.error-box strong {
+  color: #da1e28;
+}
+
+.stack-trace {
+  background: #262626;
+  color: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+}
+
+details summary {
+  cursor: pointer;
+  color: #0f62fe;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+details summary:hover {
+  text-decoration: underline;
+}
+
+/* Step Details */
+.step-detail {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  background: white;
+}
+
+.step-detail.failed {
+  border-left: 4px solid #da1e28;
+  background: #fff1f1;
+}
+
+.step-detail.success {
+  border-left: 4px solid #24a148;
+  background: #f1faf5;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.step-icon {
+  font-size: 1.2rem;
+}
+
+.step-error {
+  background: #fff;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  border-left: 3px solid #da1e28;
+}
+
+.step-error p {
+  margin-bottom: 0.5rem;
+  color: #da1e28;
+}
+
+.step-output {
+  margin-top: 0.75rem;
+}
+
+.step-output pre {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+}
+
+.step-duration {
+  font-size: 0.875rem;
+  color: #525252;
+  margin-top: 0.5rem;
+}
+
+/* Table Styling */
+.monitoring-page table {
+  width: 100%;
+}
+
+.monitoring-page td {
+  vertical-align: middle;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .monitoring-page {
+    padding: 1rem;
+  }
+  
+  .detail-section {
+    padding: 0.75rem;
+  }
+  
+  .step-detail {
+    padding: 0.75rem;
+  }
 }
 
 /* Made with Bob */

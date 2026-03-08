@@ -1,0 +1,542 @@
+.workflow-visualization {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+}
+
+.workflow-visualization h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.viz-subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+/* Container */
+.viz-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Hub and Spoke Layout */
+.viz-hub-spoke {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 12px;
+  position: relative;
+}
+
+/* Hub Row (IntegrationIQ at top) */
+.viz-hub-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  z-index: 2;
+}
+
+/* Hub Node */
+.hub-node {
+  transform: scale(1.1);
+}
+
+/* Center Node (IntegrationIQ) */
+.center-node {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.center-node .node-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Services Row (Connectors at bottom) */
+.viz-services-row {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+  z-index: 2;
+}
+
+.viz-service-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Nodes */
+.viz-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 3px solid #e0e0e0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  min-width: 180px;
+  max-width: 220px;
+  flex-shrink: 0;
+}
+
+.viz-node:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.service-node {
+  border-width: 3px;
+}
+
+.node-icon {
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: #f5f5f5;
+  border-radius: 50%;
+}
+
+.node-label {
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #333;
+}
+
+.node-badge {
+  font-size: 0.85rem;
+  color: #666;
+  background: #f0f0f0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+/* Actions List */
+.node-actions {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  background: #f9f9f9;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.action-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.action-name {
+  color: #333;
+  font-weight: 500;
+}
+
+/* Spoke Connection Lines Container */
+.viz-connections-container {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Individual Spoke Line */
+.viz-spoke-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* Vertical Spoke Line */
+.spoke-line-vertical {
+  width: 3px;
+  height: 100px;
+  background: linear-gradient(to bottom, #667eea, #764ba2);
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+/* Animated flowing dots on vertical lines */
+.spoke-line-vertical::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  background: #667eea;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  animation: flow-dot-vertical 2s linear infinite;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
+}
+
+.spoke-line-vertical::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  background: #764ba2;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  animation: flow-dot-vertical 2s linear infinite 1s;
+  box-shadow: 0 0 8px rgba(118, 75, 162, 0.8);
+}
+
+@keyframes flow-dot-vertical {
+  0% {
+    top: -10px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: calc(100% + 10px);
+    opacity: 0;
+  }
+}
+
+/* Spoke Arrows */
+.spoke-arrow-down,
+.spoke-arrow-up {
+  font-size: 1.5rem;
+  color: #667eea;
+  font-weight: bold;
+  animation: pulse-arrow 2s ease-in-out infinite;
+}
+
+.spoke-arrow-up {
+  animation-delay: 1s;
+}
+
+/* Animated flowing dots on horizontal connection lines */
+.connection-line-horizontal::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 10px;
+  height: 10px;
+  background: #667eea;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  animation: flow-dot-horizontal 2s linear infinite;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.8);
+}
+
+.connection-line-horizontal::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 8px;
+  height: 8px;
+  background: #764ba2;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  animation: flow-dot-horizontal 2s linear infinite 1s;
+  box-shadow: 0 0 8px rgba(118, 75, 162, 0.8);
+}
+
+@keyframes flow-dot-horizontal {
+  0% {
+    left: -10px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% + 10px);
+    opacity: 0;
+  }
+}
+
+/* Return connection animation (reverse direction) */
+.viz-connection-horizontal.return .connection-line-horizontal::before {
+  animation: flow-dot-horizontal-reverse 2s linear infinite;
+}
+
+.viz-connection-horizontal.return .connection-line-horizontal::after {
+  animation: flow-dot-horizontal-reverse 2s linear infinite 1s;
+}
+
+@keyframes flow-dot-horizontal-reverse {
+  0% {
+    left: calc(100% + 10px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: -10px;
+    opacity: 0;
+  }
+}
+
+.connection-arrow {
+  font-size: 1.5rem;
+  color: #667eea;
+  font-weight: bold;
+  animation: pulse-arrow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-arrow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.connection-label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Flow Description */
+.viz-flow-description {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.viz-flow-description h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.flow-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: step-counter;
+}
+
+.flow-step-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  counter-increment: step-counter;
+  position: relative;
+  padding-left: 3rem;
+}
+
+.flow-step-item::before {
+  content: counter(step-counter);
+  position: absolute;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.step-icon {
+  font-size: 1.5rem;
+}
+
+.step-text {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.step-text strong {
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .viz-flow-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .connection-line-horizontal {
+    width: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .viz-flow-row {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .viz-connection-horizontal {
+    transform: rotate(90deg);
+    margin: 0.5rem 0;
+  }
+
+  .connection-line-horizontal {
+    width: 50px;
+  }
+
+  .node-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+
+  .workflow-visualization {
+    padding: 1rem;
+  }
+
+  .viz-node {
+    min-width: 160px;
+    max-width: 200px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .workflow-visualization {
+    page-break-inside: avoid;
+  }
+
+  .viz-node {
+    box-shadow: none;
+    border: 2px solid #333;
+  }
+
+  .viz-node:hover {
+    transform: none;
+  }
+}
+
+/* Made with Bob */
+/* Responsive Design for Hub-and-Spoke */
+@media (max-width: 1024px) {
+  .viz-services-row {
+    gap: 2rem;
+  }
+
+  .viz-connections-container {
+    gap: 2rem;
+  }
+
+  .spoke-line-vertical {
+    height: 80px;
+  }
+
+  .viz-connections-container {
+    top: 110px;
+  }
+}
+
+@media (max-width: 768px) {
+  .viz-hub-spoke {
+    padding: 1rem;
+  }
+
+  .viz-services-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .viz-connections-container {
+    flex-direction: column;
+    gap: 2rem;
+    top: 100px;
+    position: relative;
+  }
+
+  .spoke-line-vertical {
+    height: 60px;
+  }
+
+  .node-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+
+  .workflow-visualization {
+    padding: 1rem;
+  }
+
+  .viz-node {
+    min-width: 160px;
+    max-width: 200px;
+  }
+
+  .hub-node {
+    transform: scale(1);
+  }
+}

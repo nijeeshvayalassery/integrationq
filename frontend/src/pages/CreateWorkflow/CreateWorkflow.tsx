@@ -3,6 +3,7 @@ import { TextArea, Button, InlineLoading } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
 import { workflowAPI } from '../../services/api';
 import { ErrorMessage } from '../../components/common/ErrorMessage';
+import { WorkflowGenerationFlow } from '../../components/WorkflowGenerationFlow/WorkflowGenerationFlow';
 import './CreateWorkflow.css';
 
 export const CreateWorkflow: React.FC = () => {
@@ -20,11 +21,29 @@ export const CreateWorkflow: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Start timing to ensure minimum display time
+      const startTime = Date.now();
+      
       const workflow = await workflowAPI.generateWorkflow(description);
-      navigate(`/workflows/${workflow._id}`);
+      
+      // Calculate how long the API call took
+      const elapsedTime = Date.now() - startTime;
+      
+      // Ensure animation shows for at least 9 seconds total (6s animation + 3s completion)
+      const minimumDisplayTime = 9000;
+      const remainingTime = Math.max(0, minimumDisplayTime - elapsedTime);
+      
+      // Wait for remaining time before navigating
+      setTimeout(() => {
+        setLoading(false);
+        // Small additional delay to show the completion state
+        setTimeout(() => {
+          navigate(`/workflows/${workflow._id}`);
+        }, 500);
+      }, remainingTime);
     } catch (err: any) {
       setError(err.message || 'Failed to generate workflow');
-    } finally {
       setLoading(false);
     }
   };
@@ -38,6 +57,9 @@ export const CreateWorkflow: React.FC = () => {
 
       {error && <ErrorMessage message={error} onClose={() => setError(null)} />}
 
+      {/* Visual Flow Animation */}
+      <WorkflowGenerationFlow isGenerating={loading} />
+
       <div className="form-section">
         <TextArea
           labelText="Workflow Description"
@@ -49,7 +71,7 @@ export const CreateWorkflow: React.FC = () => {
         />
 
         <div className="button-group">
-          <Button kind="secondary" onClick={() => navigate('/workflows')}>
+          <Button kind="secondary" onClick={() => navigate('/workflows')} disabled={loading}>
             Cancel
           </Button>
           <Button onClick={handleGenerate} disabled={loading}>
